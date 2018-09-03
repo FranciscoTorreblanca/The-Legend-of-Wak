@@ -1,5 +1,8 @@
 body{
-  margin: 0
+  margin: 0;
+  background-image: url("./backgrounds/cloudBackground.png");
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 
 .container{

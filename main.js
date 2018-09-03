@@ -8,11 +8,18 @@ let ctx = canvas.getContext("2d")
 
 //------------------------------------------------------------------//
 //Varibles globales  
-let wFrame =1;
-let images = {
- backgroundMontains: "./backgroundMountains.png",
- characterBow: "./characterBow.png",
- characterSprites: "./characterSprites.png"
+let backgroundImages = {
+ montains: "./backgrounds/backgroundMountains.png"
+}
+let characterSprites = {
+  characterBow: "./characterSprites/characterBow.png",
+  characterKick: "./characterSprites/characterKick.png",
+  characterAttack: "./characterSprites/characterAttack.png",
+  characterRun: "./characterSprites/characterRun.png",
+  characterJumpKick: "./characterSprites/characterJumpKick.png",
+  characterDamage: "./characterSprites/characterDamage.png",
+  characterWalk: "./characterSprites/characterWalk.png",
+  characterIdle: "./characterSprites/characterIdle.png"
 }
 let frames = 0;
 let interval = null
@@ -26,10 +33,11 @@ class Board{
     this.width = canvas.width
     this.height = canvas.height
     this.bg = new Image()
-    this.bg.src = images.backgroundMontains
+    this.bg.src = backgroundImages.montains
     this.bg.onload = ()=>{ this.draw() } //dibujar el board
     this.music = new Audio()
-    this.music.src = "music.mp3"
+    this.music.src = "despacito.mp3"
+    this.music.loop = true
   }
 
   draw(){
@@ -41,23 +49,23 @@ class Board{
   }
 
   moveBG(){
-    this.x-=5
-    if(this.x<-canvas.width) this.x =0
+    this.x-=8
+    if(this.x<-canvas.width){ 
+      this.x =0
+    }
   }
 } //Aqui termina la clase Board
 class Player{
   constructor(numPlayer){
+    this.x =0
     this.y = 0
-    this.posX = 50
+    this.posX = 100
     this.posY = 300
-    this.width = 50
-    this.height = 37
+    this.width = 250
+    this.height = 185
     this.player = numPlayer
     this.sprite = new Image
-    this.sprite.src = images.characterSprites
-    this.posXInicioSprite = 100
-    this.posYInicioSprite = 37*8
-    this.x = this.posXInicioSprite
+    this.sprite.src = characterSprites.characterIdle
   }
 
   draw(){
@@ -66,14 +74,22 @@ class Player{
   }
 
   changeSprite(){
-    this.y = this.posYInicioSprite
-    this.x += this.width //cambia el sprite
-    if(this.x>=50*7) {
-      this.x =  this.posXInicioSprite
-      this.posYInicioSprite =37*8
+    this.y += this.height
+    if(this.y>=this.sprite.naturalHeight) {
+      this.y =0
     }
-    
   }
+
+  moveLeft(){
+    this.sprite.src = "./characterSprites/characterRunLeft.png"
+    this.posX-=7
+  }
+
+  moveRigth(){
+    this.sprite.src = "./characterSprites/characterRun.png"
+    this.posX+=7
+  }
+
 }
 
 //------------------------------------------------------------------//
@@ -86,6 +102,7 @@ let player2 = new Player(2);
 //Funciones principales
 function start(){
   if (interval) return
+  console.log(board.music.duration)
   interval = setInterval(update,1000/60)
 }
 function update(){
@@ -101,21 +118,28 @@ function update(){
 //------------------------------------------------------------------//
 //Los observadores (listeners)
 addEventListener("keydown",function(e){
+  //--------------PLAYER1----------------//
   if(e.key == "Enter"){
     start()
     board.music.play()
 }//Comenzar
-  if (e.key== "d") {
+  if (e.keyCode== 68) {
     if(player1.posX>700){
       board.moveBG()
+      player1.sprite.src = characterSprites.characterRun
       return
     }
-    player1.posX+=5
-    console.log("hoal")
+    player1.moveRigth()
   }//mover izquierda player 1
 
-  if (e.key== "a") {
-    player1.posX-=5
-    console.log("izq")
+  if (e.keyCode== 65) {
+    if(player1.posX<50) {
+      player1.sprite.src = characterSprites.characterIdle
+      return
+    }
+    player1.moveLeft()
   }//mover izquierda player 1
+})
+addEventListener("keyup",function(e){
+  player1.sprite.src = characterSprites.characterIdle
 })
