@@ -1,8 +1,11 @@
+@import url('https://fonts.googleapis.com/css?family=VT323');
+
 body{
   margin: 0;
   background-image: url("./backgrounds/cloudBackground.png");
   background-size: cover;
   background-repeat: no-repeat;
+  font-family: "VT323";
 }
 
 .container{
