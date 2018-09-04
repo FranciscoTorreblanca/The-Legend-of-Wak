@@ -26,7 +26,8 @@ let characterSprites = {
   characterWalkLeft: "./characterSprites/characterWalkLeft.png"
 }
 let golemSprites = {
-  walkLeft: "./enemiesSprites/golemWalkLeft.png"
+  walkLeft: "./enemiesSprites/golemWalkLeft.png",
+  walk: "./enemiesSprites/golemWalk.png"
 }
 let iconImages = {
   mute: "./Icons/mute.png",
@@ -37,6 +38,7 @@ let interval = null //para el update general
 let startScreenInterval = null //para estar actualizando la pantalla de inicio
 let jumpInterval = null // para estar actualizando los sprites del jump
 let isPlaying = false // booleano para llevar control entre pantalla de GameOver- patalla de incio - pantalla de Juego
+let enemiesArray = []
 
 //------------------------------------------------------------------//
 //Clases
@@ -66,6 +68,9 @@ class Board{
     if(this.x<-canvas.width){ 
       this.x =0
     }
+    enemiesArray.forEach(function(enemy){
+      enemy.posX-=8
+    })
   }
 
 } //Termina clase Board
@@ -193,6 +198,13 @@ class Enemy{
   }
 
   moveToPlayer(){
+    if(this.posX<player1.posX) {
+      this.moveDirection = 1
+      this.sprite.src = golemSprites.walk
+    } else if(this.posX>player1.posX){
+      this.moveDirection = -1
+      this.sprite.src = golemSprites.walkLeft
+    }
     this.posX +=5*this.moveDirection
   }
 
@@ -207,7 +219,7 @@ let startScr= new StartScreen()
 let board = new Board()
 let player1 = new Player(1)
 let player2 = new Player(2)
-let golem = new Enemy(1)
+
 
 //------------------------------------------------------------------//
 //Funciones principales
@@ -221,8 +233,16 @@ function start(){ //Funció que hace iniciar el juego
 function update(){
   ctx.clearRect(0,0,canvas.width,canvas.height) //Borra todo el canvas
   board.draw()
+  if(frames%180==0) createEnemies(1)
+  enemiesArray.forEach(function(enemy){
+    if(enemy.posX<-120){
+      enemiesArray.shift()
+      return
+    }
+    enemy.draw()
+  })
+  console.log(enemiesArray)
   player1.draw()
-  golem.draw()
   frames++
 }
 
@@ -236,9 +256,11 @@ function loadScreenAnimation(){
   if (startScreenInterval) return
   startScreenInterval = setInterval(updateStartScreen,1000/60)
 }
-
 function jumpPlayer(){
   player1.jump()
+}
+function createEnemies(id){
+  enemiesArray.push(new Enemy(id))
 }
 
 //------------------------------------------------------------------//
