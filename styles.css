@@ -2,15 +2,28 @@
 
 body{
   margin: 0;
-  background-image: url("./backgrounds/cloudBackground.png");
+  background-image: url("./backgrounds/BG.png");
   background-size: cover;
   background-repeat: no-repeat;
   font-family: "VT323";
 }
 
+img{
+  width: 30vw;
+}
+h1{font-size: 5em; margin: 0;}
+h2{font-size: 4em; margin: 0;}
 .container{
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+}
+
+.instrucciones{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  margin:10vh 0;
 }
