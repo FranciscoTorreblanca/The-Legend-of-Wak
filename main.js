@@ -11,8 +11,10 @@ let rect = canvas.getBoundingClientRect()
 //Varibles globales  
 let backgroundImages = {
  montains: "./backgrounds/backgroundMountains.png",
- darkMontains: "./backgrounds/nightMontain.png"
+ darkMontains: "./backgrounds/nightMontain.png",
+ gameOverBG: "./backgrounds/gameOverBG.png"
 }
+
 let characterSprites = {
   characterBow: "./characterSprites/characterBow.png",
   characterKick: "./characterSprites/characterKick.png",
@@ -26,6 +28,7 @@ let characterSprites = {
   characterRunLeft: "./characterSprites/characterRunLeft.png",
   characterWalkLeft: "./characterSprites/characterWalkLeft.png"
 }
+
 let golemSprites = {
   walkLeft: "./enemiesSprites/golemWalkLeft.png",
   walk: "./enemiesSprites/golemWalk.png",
@@ -41,6 +44,7 @@ let iconImages = {
   mute: "./Icons/mute.png",
   sound: "./Icons/sound.png"
 }
+
 let imagesHUD = {
   p17 : "./HUD/healtPlayer1-7.png",
   p16 : "./HUD/healtPlayer1-6.png",
@@ -51,6 +55,32 @@ let imagesHUD = {
   p11 : "./HUD/healtPlayer1-1.png",
   p10 : "./HUD/healtPlayer1-0.png"
 }
+
+let imagesHUD2 = {
+  p17 : "./HUD/health2/healtPlayer1-7.png",
+  p16 : "./HUD/health2/healtPlayer1-6.png",
+  p15 : "./HUD/health2/healtPlayer1-5.png",
+  p14 : "./HUD/health2/healtPlayer1-4.png",
+  p13 : "./HUD/health2/healtPlayer1-3.png",
+  p12 : "./HUD/health2/healtPlayer1-2.png",
+  p11 : "./HUD/health2/healtPlayer1-1.png",
+  p10 : "./HUD/health2/healtPlayer1-0.png"
+}
+
+let characterSprites2 = {
+  characterBow:     "./characterSprites/player2/characterBow.png",
+  characterKick:    "./characterSprites/player2/characterKick.png",
+  characterAttack:  "./characterSprites/player2/characterAttack.png",
+  characterRun:     "./characterSprites/player2/characterRun.png",
+  characterJump:    "./characterSprites/player2/characterJump.png",
+  characterJumpKick:"./characterSprites/player2/characterJumpKick.png",
+  characterDamage:  "./characterSprites/player2/characterDamage.png",
+  characterWalk:    "./characterSprites/player2/characterWalk.png",
+  characterIdle:    "./characterSprites/player2/characterIdle.png",
+  characterRunLeft: "./characterSprites/player2/characterRunLeft.png",
+  characterWalkLeft:"./characterSprites/player2/characterWalkLeft.png"
+}
+
 let frames = 0
 let interval = null //para el update general
 let startScreenInterval = null //para estar actualizando la pantalla de inicio
@@ -138,6 +168,7 @@ class StartScreen{
 class Player{
   //TODO: Sprites + lógica del segundo 
   constructor(numPlayer){
+    this.score = 0
     this.numPlayer = numPlayer
     this.health = 7
     this.active = true
@@ -148,9 +179,11 @@ class Player{
     this.posY = 300 //posicion Y del jugador en la pantalla
     this.width = 250//Tamaño del ancho del pedazo de imagen a tomar del sprite
     this.height = 185//Tamaño del alto del pedazo de imagen a tomar del sprite
+    this.imagesSource = characterSprites
+    if(numPlayer==2) this.imagesSource = characterSprites2
     this.player = numPlayer //variable para definir número de jugador
     this.sprite = new Image() //imagen que tomará el jugador
-    this.sprite.src = characterSprites.characterIdle //En principio estará parado
+    this.sprite.src = this.imagesSource.characterIdle //En principio estará parado
     this.isJumping = false //bool para saber si está saltando
     this.jumpDirection = 1 //direccion del salto
   }
@@ -169,22 +202,22 @@ class Player{
 
   moveLeft(){ //mueve al jugador a la izquiera
     if(this.numPlayer==1){
-      if(!jumpInterval && !attackInterval) this.sprite.src = characterSprites.characterRunLeft
+      if(!jumpInterval && !attackInterval) this.sprite.src = this.imagesSource.characterRunLeft
       if(!attackInterval) this.posX-=5
     }
     if(this.numPlayer==2){
-      if(!jumpInterval2 && !attackInterval2) this.sprite.src = characterSprites.characterRunLeft
+      if(!jumpInterval2 && !attackInterval2) this.sprite.src = this.imagesSource.characterRunLeft
       if(!attackInterval2) this.posX-=5
     }
   }
 
   moveRigth(){ //mueve al juador a la derecha
     if(this.numPlayer==1){
-      if(!jumpInterval && !attackInterval) this.sprite.src = characterSprites.characterRun
+      if(!jumpInterval && !attackInterval) this.sprite.src = this.imagesSource.characterRun
       if(!attackInterval) this.posX+=5
     }
     if(this.numPlayer==2){
-      if(!jumpInterval2 && !attackInterval2) this.sprite.src = characterSprites.characterRun
+      if(!jumpInterval2 && !attackInterval2) this.sprite.src = this.imagesSource.characterRun
       if(!attackInterval2) this.posX+=5
     }
   }
@@ -192,19 +225,19 @@ class Player{
   moveUp(){ //mueve al jugador hacia arriba
     if(this.numPlayer==1){
       if(!jumpInterval && !attackInterval) {
-        this.sprite.src=characterSprites.characterWalk
+        this.sprite.src= this.imagesSource.characterWalk
         this.posY-=4
       }
     }
     if(this.numPlayer==1){
       if(!jumpInterval && !attackInterval) {
-        this.sprite.src=characterSprites.characterWalk
+        this.sprite.src = this.imagesSource.characterWalk
         this.posY-=4
       }
     }
     if(this.numPlayer==2){
       if(!jumpInterval2 && !attackInterval2) {
-        this.sprite.src=characterSprites.characterWalk
+        this.sprite.src= this.imagesSource.characterWalk
         this.posY-=4
       }
     }
@@ -212,13 +245,13 @@ class Player{
 
   moveDown(){ //mueve al jugador hacia abajo
     if(!jumpInterval && !attackInterval) {
-      this.sprite.src=characterSprites.characterWalk
+      this.sprite.src= this.imagesSource.characterWalk
       this.posY+=4
     }
   }
 
   jump(){ //hace saltar al jugador
-    this.sprite.src = characterSprites.characterJump
+    this.sprite.src = this.imagesSource.characterJump
     this.posY-=5*this.jumpDirection
     if (this.posY<150) {
       this.jumpDirection = -1
@@ -226,13 +259,13 @@ class Player{
   }
 
   attack(){
-     this.sprite.src= characterSprites.characterAttack
+     this.sprite.src= this.imagesSource.characterAttack
     // this.sprite.src=characterSprites.characterKick
     this.checkCollisions()
   }
 
   damage(){
-    this.sprite.src=characterSprites.characterDamage
+    this.sprite.src=this.imagesSource.characterDamage
     this.posX-=5
   }
 
@@ -352,7 +385,7 @@ class Enemy{
   checkCollisions(){
       if(this.crashWith(player1,"Right") && ( this.posX> player1.posX ) ){
         player1.health--
-        if(!playerDamageInterval && player1.health>0){
+        if(!playerDamageInterval && player1.health>=0){
           playerDamageInterval = setInterval(playerDamage,1000/60)
           setTimeout(() => {
             clearInterval(playerDamageInterval)
@@ -371,7 +404,9 @@ class Enemy{
   }
 }//Termina clase Enemy
 class HUD{
-  constructor(player){
+  constructor(numPlayer){
+    this.imagesSource = imagesHUD
+    if(numPlayer==2) this.imagesSource = imagesHUD2
     this.health = 7
     this.x = 0
     this.y = 0
@@ -382,7 +417,7 @@ class HUD{
     this.inBoardHeight = 100
     this.inBoardWidth =300
     this.sprite = new Image()
-    this.sprite.src = imagesHUD.p17
+    this.sprite.src = this.imagesSource.p17
   }
 
   draw(){ //dibuja al jugador
@@ -392,13 +427,13 @@ class HUD{
 
   changeSprite(){ //cambia el sprite
     
-    if(this.health==6){this.sprite.src = imagesHUD.p16}
-    else if(this.health==5){this.sprite.src = imagesHUD.p15}
-    else if(this.health==4){this.sprite.src = imagesHUD.p14}
-    else if(this.health==3){this.sprite.src = imagesHUD.p13}
-    else if(this.health==2){this.sprite.src = imagesHUD.p12}
-    else if(this.health==1){this.sprite.src = imagesHUD.p11}
-    else if(this.health==0){this.sprite.src = imagesHUD.p10}
+    if(this.health==6){this.sprite.src = this.imagesSource.p16}
+    else if(this.health==5){this.sprite.src = this.imagesSource.p15}
+    else if(this.health==4){this.sprite.src = this.imagesSource.p14}
+    else if(this.health==3){this.sprite.src = this.imagesSource.p13}
+    else if(this.health==2){this.sprite.src = this.imagesSource.p12}
+    else if(this.health==1){this.sprite.src = this.imagesSource.p11}
+    else if(this.health==0){this.sprite.src = this.imagesSource.p10}
     
     this.y += this.height
     if(this.y>=this.sprite.naturalHeight) {
@@ -414,8 +449,8 @@ let startScr= new StartScreen()
 let board = new Board()
 let player1 = new Player(1)
 let player2 = new Player(2)
-let hud1 = new HUD(player1)
-let hud2 = new HUD(player2)
+let hud1 = new HUD(1)
+let hud2 = new HUD(2)
 
 
 //------------------------------------------------------------------//
@@ -434,16 +469,22 @@ function start(){ //Funció que hace iniciar el juego
   window.addEventListener('keyup', function (e) {
     board.keys[e.keyCode] = false; 
     if(!attackInterval) player1.sprite.src = characterSprites.characterIdle
-    if(!attackInterval2) player2.sprite.src = characterSprites.characterIdle
+    if(!attackInterval2) player2.sprite.src = characterSprites2.characterIdle
   })
 //-------AQUI TERMINAN LOS OBSERVADORES PARA HACER QUE PRESIONE VARIAS TECLAS ------ //
 }
+
 function update(){
   ctx.clearRect(0,0,canvas.width,canvas.height) //Borra todo el canvas
   board.draw()
   hud1.health = player1.health
   hud1.draw()
-  if(frames%500==0) createEnemies(1)
+
+  hud2.health = player2.health
+  hud2.posX = 700
+  if(player2.active) hud2.draw()
+
+  if(frames%800==0) createEnemies(1)
   enemiesArray.forEach(function(enemy){
     if(enemy.posX<-120){
       enemiesArray.shift()
@@ -456,6 +497,8 @@ function update(){
   if (board.keys && board.keys[68] && isPlaying) {
     if(player1.posX>720 && !attackInterval){
       board.moveBG()
+      player2.posX-=4 
+
       
       if(!jumpInterval) player1.sprite.src = characterSprites.characterRun
       //return
@@ -487,9 +530,9 @@ function update(){
     if (board.keys && board.keys[76] && isPlaying) {
       if(player2.posX>720 && !attackInterval){
         board.moveBG()
-        player1.posX-=5 
+        player1.posX-=4 
         
-        if(!jumpInterval2) player2.sprite.src = characterSprites.characterRun
+        if(!jumpInterval2) player2.sprite.src = characterSprites2.characterRun
         //return
       }else {
         player2.moveRigth()
@@ -497,7 +540,7 @@ function update(){
     }
     if (board.keys && board.keys[74] && isPlaying) {
       if(player2.posX<50) {
-        player2.sprite.src = characterSprites.characterIdle
+        player2.sprite.src = characterSprites2.characterIdle
         //return
       }else {
         player2.moveLeft()
@@ -510,7 +553,7 @@ function update(){
       if(player2.posY<320) player2.moveDown()
      }
     if(board.keys && player2.posY<280&& board.keys[85] && isPlaying){
-      player2.sprite.src = characterSprites.characterJumpKick
+      player2.sprite.src = characterSprites2.characterJumpKick
       if(player2.y>400)  player2.checkCollisions()
     }
 }
@@ -518,15 +561,37 @@ function update(){
   if(player2.active===true) player2.draw()
   if(!player2.active)  joinPlayer2Animation()
   frames++
+  if(player1.health<1 || player2.health<1){
+    setTimeout(function(){
+      gameOver()
+    },600) 
+  }
 }
+
 function gameOver(){
   clearInterval(interval)
+  gameOverAnimation()
 }
 //------------------------------------------------------------------//
 //Funciones auxiliares
+let joinAnimX=700
+let joinAnimY=70
+let joinAnimDir= -1
 function joinPlayer2Animation(){
-  ctx.font = "20px VT323"
-  ctx.fillText("Press 'u' to Join the legend",300,20)
+  ctx.font = "25px VT323"
+  ctx.fillStyle = "gray"
+  ctx.fillText("Press 'u' to Join the legend",joinAnimX+3,joinAnimY+3)
+  ctx.fillStyle = "white"
+  ctx.fillText("Press 'u' to Join the legend",joinAnimX,joinAnimY)
+
+  joinAnimY+=8/25*joinAnimDir
+  if(joinAnimY>80){ 
+    joinAnimDir = -1
+  }
+  if(joinAnimY<60){
+    joinAnimDir = 1
+  }
+
 }
 function updateStartScreen(){
   ctx.clearRect(0,0,canvas.width,canvas.height) //Borra todo el canvas
@@ -565,7 +630,17 @@ function playerDamage(){
   player1.damage()
 }
 function gameOverAnimation(){
-
+  let BGGameOverImg = new Image()
+  BGGameOverImg.src =backgroundImages.gameOverBG
+  BGGameOverImg.onload = function(){
+    ctx.clearRect(0,0,canvas.width,canvas.height)
+    ctx.drawImage(BGGameOverImg,0,0,canvas.width,canvas.height)
+    ctx.font = "80px VT323"
+    ctx.fillStyle = "gray"
+    ctx.fillText("Game Over",350+6,280+6)
+    ctx.fillStyle = "white"
+    ctx.fillText("Game Over",350,280)
+  }
 }
 
 
@@ -579,7 +654,7 @@ addEventListener("keydown",function(e){
     isPlaying = true
 }//Comenzar
 if(isPlaying){
-  if(jumpInterval) return
+  if(!jumpInterval){
   if(e.keyCode==67){
     jumpInterval = setInterval(jumpPlayer,1000/60)
     setTimeout(function(){
@@ -598,15 +673,15 @@ if(isPlaying){
           player1.sprite.src = characterSprites.characterIdle
         },1000)
   } //el jugador golpea
-
+  }
   if(jumpInterval2) return
   if(e.keyCode==77){
-    jumpInterval = setInterval(jumpPlayer2,1000/60)
+    jumpInterval2 = setInterval(jumpPlayer2,1000/60)
     setTimeout(function(){
       clearInterval(jumpInterval2)
       jumpInterval2 = null
       player2.jumpDirection =1
-      player2.sprite.src = characterSprites.characterIdle
+      player2.sprite.src = characterSprites2.characterIdle
     },1000)
   } //hace saltar al jugador
     if(e.keyCode == 85){
@@ -615,7 +690,7 @@ if(isPlaying){
         setTimeout(function(){
           clearInterval(attackInterval2)
           attackInterval2 = null
-          player2.sprite.src = characterSprites.characterIdle
+          player2.sprite.src = characterSprites2.characterIdle
         },1000)
       player2.active=true
   } //el jugador golpea
